@@ -11,6 +11,8 @@ import com.edusys.enity.KhachHang;
 import com.edusys.enity.NhanVien;
 import com.edusys.utils.Auth;
 import com.edusys.utils.MsgBox;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
 /**
@@ -26,6 +28,15 @@ public class DangNhapJDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         init();
+        txtMatKhau.addKeyListener(new KeyAdapter() {
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) { // Nếu nhấn Enter
+            dangNhap(); // Gọi hàm đăng nhập
+        }
+    }
+    
+});
     }
 
     /**
