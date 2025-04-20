@@ -10,8 +10,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 public class KhachHangJDialog extends javax.swing.JDialog {
 
@@ -42,63 +46,121 @@ public class KhachHangJDialog extends javax.swing.JDialog {
     }
 
     private void init() {
-        this.setLocationRelativeTo(null);
-        tblModel = (DefaultTableModel) tblThongKeKhachHang.getModel();
-        tblModel.setRowCount(0);
-    }
+    this.setLocationRelativeTo(null);
+    tblModel = (DefaultTableModel) tblThongKeKhachHang.getModel();
+    tblModel.setRowCount(0);
 
-    private void loadDataToTable() {
-        try {
-            String sql;
-            if (Auth.isCustomer()) {
-                sql = "SELECT MaKhachHang, HoTen, NgaySinh, GioiTinh, SoCCCD, DiaChi, SoDienThoai, Email, MatKhau, MaNhanVien, NgayTao " +
-                      "FROM KHACH_HANG WHERE MaKhachHang = ?";
-                ResultSet rs = XJdbc.query(sql, Auth.userKhachHang.getMaKhachHang());
-                tblModel.setRowCount(0);
-                while (rs.next()) {
-                    Object[] row = {
-                        rs.getString("MaKhachHang"),
-                        rs.getString("HoTen"),
-                        sdfInput.format(rs.getDate("NgaySinh")),
-                        rs.getBoolean("GioiTinh") ? "Nam" : "Nữ",
-                        rs.getString("SoCCCD"),
-                        rs.getString("DiaChi"),
-                        rs.getString("SoDienThoai"),
-                        rs.getString("Email"),
-                        rs.getString("MatKhau"),
-                        rs.getString("MaNhanVien"),
-                        sdfInput.format(rs.getDate("NgayTao"))
-                    };
-                    tblModel.addRow(row);
-                }
-                rs.close();
-            } else if (Auth.isEmployee()) {
-                sql = "SELECT MaKhachHang, HoTen, NgaySinh, GioiTinh, SoCCCD, DiaChi, SoDienThoai, Email, MatKhau, MaNhanVien, NgayTao " +
-                      "FROM KHACH_HANG";
-                ResultSet rs = XJdbc.query(sql);
-                tblModel.setRowCount(0);
-                while (rs.next()) {
-                    Object[] row = {
-                        rs.getString("MaKhachHang"),
-                        rs.getString("HoTen"),
-                        sdfInput.format(rs.getDate("NgaySinh")),
-                        rs.getBoolean("GioiTinh") ? "Nam" : "Nữ",
-                        rs.getString("SoCCCD"),
-                        rs.getString("DiaChi"),
-                        rs.getString("SoDienThoai"),
-                        rs.getString("Email"),
-                        rs.getString("MatKhau"),
-                        rs.getString("MaNhanVien"),
-                        sdfInput.format(rs.getDate("NgayTao"))
-                    };
-                    tblModel.addRow(row);
-                }
-                rs.close();
+    // Áp dụng DocumentFilter cho txtSoCCCD (giới hạn 12 số)
+    ((javax.swing.text.AbstractDocument) txtSoCCCD.getDocument()).setDocumentFilter(new NumberLengthFilter(12));
+
+    // Áp dụng DocumentFilter cho txtSDT (giới hạn 10 số)
+    ((javax.swing.text.AbstractDocument) txtSDT.getDocument()).setDocumentFilter(new NumberLengthFilter(10));
+
+    if (Auth.isLogin()) {
+        if (Auth.isCustomer()) {
+            // Ẩn các nút không cần thiết
+            btnNew.setVisible(false);
+            btnDelete.setVisible(false);
+            btnReset.setVisible(false);
+            btnBack.setVisible(false);
+            btnFirst.setVisible(false);
+            btnLast.setVisible(false);
+            btnNext.setVisible(false);
+            btnEdit.setVisible(true);
+
+            // Điền thông tin khách hàng hiện tại vào form
+            txtMaKH.setText(Auth.userKhachHang.getMaKhachHang());
+            txtHoTen.setText(Auth.userKhachHang.getHoTen());
+            txtNgaySinh.setText(sdfInput.format(Auth.userKhachHang.getNgaySinh()));
+            if (Auth.userKhachHang.isGioiTinh()) {
+                rdoNam.setSelected(true);
+            } else {
+                rdoNu.setSelected(true);
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtSoCCCD.setText(Auth.userKhachHang.getSoCCCD());
+            txtDiaChi.setText(Auth.userKhachHang.getDiaChi());
+            txtSDT.setText(Auth.userKhachHang.getSoDienThoai());
+            txtEmail.setText(Auth.userKhachHang.getEmail());
+            txtMatKhau.setText(Auth.userKhachHang.getMatKhau());
+            txtXacNhanMatKhau.setText(Auth.userKhachHang.getMatKhau());
+
+            // Khóa các trường không cho sửa
+            txtMaKH.setEditable(false);
+            txtNgaySinh.setEditable(false);
+            rdoNam.setEnabled(false);
+            rdoNu.setEnabled(false);
+            txtSoCCCD.setEditable(false);
+
+            // Ẩn tab "Danh sách" (tùy chọn)
+            jTabbedPane1.removeTabAt(1); // Xóa tab "DANH SÁCH"
+        } else if (Auth.isEmployee()) {
+            // Hiển thị đầy đủ chức năng cho nhân viên
+            btnNew.setVisible(true);
+            btnDelete.setVisible(true);
+            btnEdit.setVisible(true);
+            btnReset.setVisible(true);
+            btnBack.setVisible(true);
+            btnFirst.setVisible(true);
+            btnLast.setVisible(true);
+            btnNext.setVisible(true);
         }
     }
+
+    loadDataToTable();
+}
+
+    private void loadDataToTable() {
+    try {
+        String sql;
+        if (Auth.isCustomer()) {
+            sql = "SELECT MaKhachHang, HoTen, NgaySinh, GioiTinh, SoCCCD, DiaChi, SoDienThoai, Email, MatKhau, MaNhanVien, NgayTao " +
+                  "FROM KHACH_HANG WHERE MaKhachHang = ?";
+            ResultSet rs = XJdbc.query(sql, Auth.userKhachHang.getMaKhachHang());
+            tblModel.setRowCount(0);
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("MaKhachHang"),
+                    rs.getString("HoTen"),
+                    sdfInput.format(rs.getDate("NgaySinh")),
+                    rs.getBoolean("GioiTinh") ? "Nam" : "Nữ",
+                    rs.getString("SoCCCD"),
+                    rs.getString("DiaChi"),
+                    rs.getString("SoDienThoai"),
+                    rs.getString("Email"),
+                    rs.getString("MatKhau"),
+                    rs.getString("MaNhanVien"),
+                    sdfInput.format(rs.getDate("NgayTao"))
+                };
+                tblModel.addRow(row);
+            }
+            rs.close();
+        } else if (Auth.isEmployee()) {
+            sql = "SELECT MaKhachHang, HoTen, NgaySinh, GioiTinh, SoCCCD, DiaChi, SoDienThoai, Email, MatKhau, MaNhanVien, NgayTao " +
+                  "FROM KHACH_HANG";
+            ResultSet rs = XJdbc.query(sql);
+            tblModel.setRowCount(0);
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("MaKhachHang"),
+                    rs.getString("HoTen"),
+                    sdfInput.format(rs.getDate("NgaySinh")),
+                    rs.getBoolean("GioiTinh") ? "Nam" : "Nữ",
+                    rs.getString("SoCCCD"),
+                    rs.getString("DiaChi"),
+                    rs.getString("SoDienThoai"),
+                    rs.getString("Email"),
+                    rs.getString("MatKhau"),
+                    rs.getString("MaNhanVien"),
+                    sdfInput.format(rs.getDate("NgayTao"))
+                };
+                tblModel.addRow(row);
+            }
+            rs.close();
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
     private String generateMaKH() throws SQLException {
         String sql = "SELECT MAX(MaKhachHang) FROM KHACH_HANG";
@@ -476,148 +538,203 @@ public class KhachHangJDialog extends javax.swing.JDialog {
     private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
         // TODO add your handling code here:
         String maKH = txtMaKH.getText().trim();
-        String hoTen = txtHoTen.getText().trim();
-        String ngaySinh = txtNgaySinh.getText().trim();
-        Boolean gioiTinh = rdoNam.isSelected() ? true : rdoNu.isSelected() ? false : null;
-        String soCCCD = txtSoCCCD.getText().trim();
-        String diaChi = txtDiaChi.getText().trim();
-        String soDienThoai = txtSDT.getText().trim();
-        String email = txtEmail.getText().trim();
-        String matKhau = txtMatKhau.getText().trim();
-        String xacNhanMatKhau = txtXacNhanMatKhau.getText().trim();
+    String hoTen = txtHoTen.getText().trim();
+    String ngaySinh = txtNgaySinh.getText().trim();
+    Boolean gioiTinh = rdoNam.isSelected() ? true : rdoNu.isSelected() ? false : null;
+    String soCCCD = txtSoCCCD.getText().trim();
+    String diaChi = txtDiaChi.getText().trim();
+    String soDienThoai = txtSDT.getText().trim();
+    String email = txtEmail.getText().trim();
+    String matKhau = txtMatKhau.getText().trim();
+    String xacNhanMatKhau = txtXacNhanMatKhau.getText().trim();
 
-        if (maKH.isEmpty() || hoTen.isEmpty() || ngaySinh.isEmpty() || gioiTinh == null || soCCCD.isEmpty() || matKhau.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin bắt buộc!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    // Kiểm tra các trường bắt buộc
+    if (maKH.isEmpty() || hoTen.isEmpty() || ngaySinh.isEmpty() || gioiTinh == null || soCCCD.isEmpty() || matKhau.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin bắt buộc!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-        if (!matKhau.equals(xacNhanMatKhau)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // Kiểm tra mật khẩu khớp
+    if (!matKhau.equals(xacNhanMatKhau)) {
+        JOptionPane.showMessageDialog(this, "Mật khẩu không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        String ngaySinhSQL;
-        try {
-            sdfInput.setLenient(false);
-            java.util.Date date = sdfInput.parse(ngaySinh);
-            ngaySinhSQL = sdfOutput.format(date);
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Ngày sinh không đúng định dạng (dd/MM/yyyy)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // Kiểm tra định dạng ngày sinh
+    String ngaySinhSQL;
+    try {
+        sdfInput.setLenient(false);
+        java.util.Date date = sdfInput.parse(ngaySinh);
+        ngaySinhSQL = sdfOutput.format(date);
+    } catch (ParseException e) {
+        JOptionPane.showMessageDialog(this, "Ngày sinh không đúng định dạng (dd/MM/yyyy)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        try {
-            String checkSql = "SELECT COUNT(*) FROM KHACH_HANG WHERE MaKhachHang = ? OR SoCCCD = ?";
-            ResultSet rs = XJdbc.query(checkSql, maKH, soCCCD);
-            rs.next();
-            if (rs.getInt(1) > 0) {
-                JOptionPane.showMessageDialog(this, "Mã khách hàng hoặc số CCCD đã tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                rs.close();
-                return;
-            }
+    try {
+        // Kiểm tra trùng lặp MaKH hoặc SoCCCD
+        String checkSql = "SELECT COUNT(*) FROM KHACH_HANG WHERE MaKhachHang = ? OR SoCCCD = ?";
+        ResultSet rs = XJdbc.query(checkSql, maKH, soCCCD);
+        rs.next();
+        if (rs.getInt(1) > 0) {
+            JOptionPane.showMessageDialog(this, "Mã khách hàng hoặc số CCCD đã tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             rs.close();
-
-            String sql = "INSERT INTO KHACH_HANG (MaKhachHang, HoTen, NgaySinh, GioiTinh, SoCCCD, DiaChi, SoDienThoai, Email, MatKhau, MaNhanVien, NgayTao) " +
-                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
-            String maNV = Auth.isEmployee() ? Auth.userNhanVien.getMaNhanVien() : "NV001";
-            XJdbc.update(sql, maKH, hoTen, ngaySinhSQL, gioiTinh, soCCCD, diaChi, soDienThoai, email, matKhau, maNV);
-
-            JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            clearForm();
-            loadDataToTable();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi thêm khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        rs.close();
+
+        // Thêm khách hàng với NgayTao là thời gian hiện tại
+        String sql = "INSERT INTO KHACH_HANG (MaKhachHang, HoTen, NgaySinh, GioiTinh, SoCCCD, DiaChi, SoDienThoai, Email, MatKhau, MaNhanVien, NgayTao) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String maNV = Auth.isEmployee() ? Auth.userNhanVien.getMaNhanVien() : "NV001";
+        Date ngayTao = new Date(); // Lấy thời gian hiện tại
+        XJdbc.update(sql, maKH, hoTen, ngaySinhSQL, gioiTinh, soCCCD, diaChi, soDienThoai, email, matKhau, maNV, ngayTao);
+
+        JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        clearForm();
+        loadDataToTable();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi thêm khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
         int selectedRow = tblThongKeKhachHang.getSelectedRow();
-        if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để xóa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+    if (selectedRow < 0) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để sửa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String maKH = txtMaKH.getText().trim();
+    String hoTen = txtHoTen.getText().trim();
+    String ngaySinh = txtNgaySinh.getText().trim();
+    Boolean gioiTinh = rdoNam.isSelected() ? true : rdoNu.isSelected() ? false : null;
+    String soCCCD = txtSoCCCD.getText().trim();
+    String diaChi = txtDiaChi.getText().trim();
+    String soDienThoai = txtSDT.getText().trim();
+    String email = txtEmail.getText().trim();
+    String matKhau = txtMatKhau.getText().trim();
+    String xacNhanMatKhau = txtXacNhanMatKhau.getText().trim();
+
+    // Kiểm tra các trường bắt buộc
+    if (maKH.isEmpty() || hoTen.isEmpty() || ngaySinh.isEmpty() || gioiTinh == null || soCCCD.isEmpty() || matKhau.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin bắt buộc!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Kiểm tra mật khẩu khớp
+    if (!matKhau.equals(xacNhanMatKhau)) {
+        JOptionPane.showMessageDialog(this, "Mật khẩu không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (Auth.isCustomer() && !maKH.equals(Auth.userKhachHang.getMaKhachHang())) {
+        JOptionPane.showMessageDialog(this, "Bạn chỉ có thể sửa thông tin của mình!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Kiểm tra định dạng ngày sinh
+    String ngaySinhSQL;
+    try {
+        sdfInput.setLenient(false);
+        java.util.Date date = sdfInput.parse(ngaySinh);
+        ngaySinhSQL = sdfOutput.format(date);
+    } catch (ParseException e) {
+        JOptionPane.showMessageDialog(this, "Ngày sinh không đúng định dạng (dd/MM/yyyy)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        // Kiểm tra trùng lặp SoCCCD (trừ chính khách hàng đang sửa)
+        String checkSql = "SELECT COUNT(*) FROM KHACH_HANG WHERE SoCCCD = ? AND MaKhachHang != ?";
+        ResultSet rs = XJdbc.query(checkSql, soCCCD, maKH);
+        rs.next();
+        if (rs.getInt(1) > 0) {
+            JOptionPane.showMessageDialog(this, "Số CCCD đã tồn tại cho khách hàng khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            rs.close();
             return;
         }
+        rs.close();
 
-        String maKH = tblThongKeKhachHang.getValueAt(selectedRow, 0).toString();
-        if (Auth.isCustomer() && !maKH.equals(Auth.userKhachHang.getMaKhachHang())) {
-            JOptionPane.showMessageDialog(this, "Bạn chỉ có thể xóa thông tin của mình!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        // Cập nhật khách hàng (NgayTao giữ nguyên, không thay đổi)
+        String sql = "UPDATE KHACH_HANG SET HoTen = ?, NgaySinh = ?, GioiTinh = ?, SoCCCD = ?, DiaChi = ?, SoDienThoai = ?, Email = ?, MatKhau = ? " +
+                     "WHERE MaKhachHang = ?";
+        XJdbc.update(sql, hoTen, ngaySinhSQL, gioiTinh, soCCCD, diaChi, soDienThoai, email, matKhau, maKH);
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            String sql = "DELETE FROM KHACH_HANG WHERE MaKhachHang = ?";
-            XJdbc.update(sql, maKH);
-            JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadDataToTable();
-            clearForm();
-        }
+        JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        loadDataToTable();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         // TODO add your handling code here:
-        int selectedRow = tblThongKeKhachHang.getSelectedRow();
-        if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để sửa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         String maKH = txtMaKH.getText().trim();
-        String hoTen = txtHoTen.getText().trim();
-        String ngaySinh = txtNgaySinh.getText().trim();
-        Boolean gioiTinh = rdoNam.isSelected() ? true : rdoNu.isSelected() ? false : null;
-        String soCCCD = txtSoCCCD.getText().trim();
-        String diaChi = txtDiaChi.getText().trim();
-        String soDienThoai = txtSDT.getText().trim();
-        String email = txtEmail.getText().trim();
-        String matKhau = txtMatKhau.getText().trim();
-        String xacNhanMatKhau = txtXacNhanMatKhau.getText().trim();
+    String hoTen = txtHoTen.getText().trim();
+    String ngaySinh = txtNgaySinh.getText().trim();
+    Boolean gioiTinh = rdoNam.isSelected() ? true : rdoNu.isSelected() ? false : null;
+    String soCCCD = txtSoCCCD.getText().trim();
+    String diaChi = txtDiaChi.getText().trim();
+    String soDienThoai = txtSDT.getText().trim();
+    String email = txtEmail.getText().trim();
+    String matKhau = txtMatKhau.getText().trim();
+    String xacNhanMatKhau = txtXacNhanMatKhau.getText().trim();
 
-        if (maKH.isEmpty() || hoTen.isEmpty() || ngaySinh.isEmpty() || gioiTinh == null || soCCCD.isEmpty() || matKhau.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin bắt buộc!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    // Kiểm tra các trường bắt buộc
+    if (hoTen.isEmpty() || soDienThoai.isEmpty() || email.isEmpty() || matKhau.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin bắt buộc!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-        if (!matKhau.equals(xacNhanMatKhau)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // Kiểm tra mật khẩu khớp
+    if (!matKhau.equals(xacNhanMatKhau)) {
+        JOptionPane.showMessageDialog(this, "Mật khẩu không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        if (Auth.isCustomer() && !maKH.equals(Auth.userKhachHang.getMaKhachHang())) {
-            JOptionPane.showMessageDialog(this, "Bạn chỉ có thể sửa thông tin của mình!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // Kiểm tra độ dài Số điện thoại (phải đủ 10 số)
+    if (soDienThoai.length() != 10 || !soDienThoai.matches("\\d{10}")) {
+        JOptionPane.showMessageDialog(this, "Số điện thoại phải là 10 chữ số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        String ngaySinhSQL;
-        try {
-            sdfInput.setLenient(false);
-            java.util.Date date = sdfInput.parse(ngaySinh);
-            ngaySinhSQL = sdfOutput.format(date);
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Ngày sinh không đúng định dạng (dd/MM/yyyy)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    if (Auth.isCustomer() && !maKH.equals(Auth.userKhachHang.getMaKhachHang())) {
+        JOptionPane.showMessageDialog(this, "Bạn chỉ có thể sửa thông tin của mình!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        try {
-            String checkSql = "SELECT COUNT(*) FROM KHACH_HANG WHERE SoCCCD = ? AND MaKhachHang != ?";
-            ResultSet rs = XJdbc.query(checkSql, soCCCD, maKH);
-            rs.next();
-            if (rs.getInt(1) > 0) {
-                JOptionPane.showMessageDialog(this, "Số CCCD đã tồn tại cho khách hàng khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                rs.close();
-                return;
-            }
+    try {
+        // Kiểm tra trùng lặp SoDienThoai (trừ chính khách hàng đang sửa)
+        String checkSql = "SELECT COUNT(*) FROM KHACH_HANG WHERE SoDienThoai = ? AND MaKhachHang != ?";
+        ResultSet rs = XJdbc.query(checkSql, soDienThoai, maKH);
+        rs.next();
+        if (rs.getInt(1) > 0) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại đã tồn tại cho khách hàng khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             rs.close();
-
-            String sql = "UPDATE KHACH_HANG SET HoTen = ?, NgaySinh = ?, GioiTinh = ?, SoCCCD = ?, DiaChi = ?, SoDienThoai = ?, Email = ?, MatKhau = ? " +
-                         "WHERE MaKhachHang = ?";
-            XJdbc.update(sql, hoTen, ngaySinhSQL, gioiTinh, soCCCD, diaChi, soDienThoai, email, matKhau, maKH);
-
-            JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadDataToTable();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        rs.close();
+
+        // Cập nhật thông tin khách hàng
+        String sql = "UPDATE KHACH_HANG SET HoTen = ?, DiaChi = ?, SoDienThoai = ?, Email = ?, MatKhau = ? WHERE MaKhachHang = ?";
+        XJdbc.update(sql, hoTen, diaChi, soDienThoai, email, matKhau, maKH);
+
+        // Cập nhật Auth.userKhachHang nếu là khách hàng đang đăng nhập
+        if (Auth.isCustomer()) {
+            Auth.userKhachHang.setHoTen(hoTen);
+            Auth.userKhachHang.setDiaChi(diaChi);
+            Auth.userKhachHang.setSoDienThoai(soDienThoai);
+            Auth.userKhachHang.setEmail(email);
+            Auth.userKhachHang.setMatKhau(matKhau);
+        }
+
+        JOptionPane.showMessageDialog(this, "Cập nhật thông tin thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        loadDataToTable();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật khách hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
@@ -783,4 +900,42 @@ public class KhachHangJDialog extends javax.swing.JDialog {
         tblThongKeKhachHang.clearSelection();
         currentRow = -1;
     }
+    // DocumentFilter để giới hạn độ dài và chỉ cho phép nhập số
+private class NumberLengthFilter extends DocumentFilter {
+    private final int maxLength;
+
+    public NumberLengthFilter(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    @Override
+    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+        if (string == null) return;
+
+        // Chỉ cho phép nhập số
+        if (!string.matches("\\d*")) return;
+
+        // Kiểm tra độ dài sau khi thêm chuỗi mới
+        int currentLength = fb.getDocument().getLength();
+        int newLength = currentLength + string.length();
+        if (newLength <= maxLength) {
+            super.insertString(fb, offset, string, attr);
+        }
+    }
+
+    @Override
+    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+        if (text == null) return;
+
+        // Chỉ cho phép nhập số
+        if (!text.matches("\\d*")) return;
+
+        // Kiểm tra độ dài sau khi thay thế
+        int currentLength = fb.getDocument().getLength();
+        int newLength = currentLength - length + text.length();
+        if (newLength <= maxLength) {
+            super.replace(fb, offset, length, text, attrs);
+        }
+    }
+}
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="Qu&#x1ea3;n L&#xfd; Giao D&#x1ecb;ch"/>
@@ -24,12 +24,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jTabbedPane1" alignment="0" max="32767" attributes="0"/>
+          <Component id="jTabbedPane1" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jTabbedPane1" alignment="1" pref="471" max="32767" attributes="0"/>
+          <Component id="jTabbedPane1" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -53,24 +53,34 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtTK" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtTenNguoiNhan" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtSoTienChuyen" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtNoiDung" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnChuyenTien" alignment="0" pref="564" max="32767" attributes="0"/>
                           <Component id="txtMaNguoiNhan" alignment="1" max="32767" attributes="0"/>
+                          <Component id="btnChuyenTien" alignment="0" pref="722" max="32767" attributes="0"/>
+                          <Component id="txtSoDu" alignment="0" max="32767" attributes="0"/>
+                          <Component id="txtSoThe" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lblTK" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblTenNH" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblSoTienChuyen" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblNoiDung" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblPhanLoai" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cboPhanLoai" alignment="0" min="-2" pref="128" max="-2" attributes="0"/>
-                                  <Component id="lblNguoiNhan" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="cboTK" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="lblTK" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="lblSoDu" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="lblNguoiNhan" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
+                          <Component id="txtSoDienThoai" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -82,8 +92,16 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblTK" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtTK" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="cboTK" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblSoDu" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="txtSoDu" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="txtSoThe" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="lblNguoiNhan" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="txtMaNguoiNhan" min="-2" pref="33" max="-2" attributes="0"/>
@@ -91,6 +109,10 @@
                       <Component id="lblTenNH" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="txtTenNguoiNhan" min="-2" pref="30" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="txtSoDienThoai" min="-2" pref="32" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblSoTienChuyen" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -103,9 +125,9 @@
                       <Component id="lblPhanLoai" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cboPhanLoai" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnChuyenTien" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace pref="24" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -116,8 +138,6 @@
                 <Property name="text" type="java.lang.String" value="T&#xe0;i kho&#x1ea3;n ng&#xe2;n h&#xe0;ng"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtTK">
-            </Component>
             <Component class="javax.swing.JLabel" name="lblTenNH">
               <Properties>
                 <Property name="text" type="java.lang.String" value="T&#xea;n ng&#x1b0;&#x1edd;i nh&#x1ead;n"/>
@@ -127,7 +147,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="lblSoTienChuyen">
               <Properties>
-                <Property name="text" type="java.lang.String" value="S&#x1ed1; ti&#x1ec1;n chuy&#x1ec3;n"/>
+                <Property name="text" type="java.lang.String" value="S&#x1ed1; ti&#x1ec1;n giao d&#x1ecb;ch"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtSoTienChuyen">
@@ -155,7 +175,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Chuy&#x1ec3;n ti&#x1ec1;n"/>
+                <Property name="text" type="java.lang.String" value="Giao d&#x1ecb;ch"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnChuyenTienActionPerformed"/>
@@ -178,6 +198,40 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtMaNguoiNhan">
             </Component>
+            <Component class="javax.swing.JComboBox" name="cboTK">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="0"/>
+                </Property>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblSoDu">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="S&#x1ed1; d&#x1b0;"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtSoDu">
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Th&#x1ebb; ng&#xe2;n h&#xe0;ng"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtSoThe">
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtSoTheActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="S&#x1ed1; &#x111;i&#x1ec7;n tho&#x1ea1;i"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtSoDienThoai">
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -192,7 +246,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="576" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="734" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -218,10 +272,42 @@
                       <Table columnCount="5" rowCount="4">
                         <Column editable="true" title="S&#x1ed1; t&#xe0;i kho&#x1ea3;n" type="java.lang.Object"/>
                         <Column editable="true" title="T&#xea;n ng&#x1b0;&#x1edd;i nh&#x1ead;n" type="java.lang.Object"/>
-                        <Column editable="true" title="S&#x1ed1; ti&#x1ec1;n chuy&#x1ec3;n" type="java.lang.Object"/>
-                        <Column editable="true" title="N&#x1ed9;i dung chuy&#x1ec3;n" type="java.lang.Object"/>
+                        <Column editable="true" title="S&#x1ed1; ti&#x1ec1;n giao d&#x1ecb;ch" type="java.lang.Object"/>
+                        <Column editable="true" title="N&#x1ed9;i dung giao d&#x1ecb;ch" type="java.lang.Object"/>
                         <Column editable="true" title="Ph&#xe2;n lo&#x1ea1;i" type="java.lang.Object"/>
                       </Table>
+                    </Property>
+                    <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+                      <TableColumnModel selectionModel="0">
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                      </TableColumnModel>
+                    </Property>
+                    <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+                      <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                     </Property>
                   </Properties>
                 </Component>

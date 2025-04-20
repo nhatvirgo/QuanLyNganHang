@@ -243,40 +243,51 @@ public class DangNhapJDialog extends javax.swing.JDialog {
     
     NhanVienDAO nvDao = new NhanVienDAO();
     KhachHangDAO khDao = new KhachHangDAO();
-    void dangNhap() {
-        String maDangNhap = txtMaDangNhap.getText();
-        String matKhau = new String(txtMatKhau.getPassword());
-        
-        // Kiểm tra nhân viên
-        NhanVien nhanVien = nvDao.selectById(maDangNhap);
-        if (nhanVien != null) {
-            if (!matKhau.equals(nhanVien.getMatKhau())) {
-                MsgBox.alert(this, "Sai mật khẩu!");
-            } else {
-                Auth.userNhanVien = nhanVien;
-                MsgBox.alert(this, "Đăng nhập nhân viên thành công!");
-                this.dispose();
-            }
-            return;
-        }
+        void dangNhap() {
+    String maDangNhap = txtMaDangNhap.getText().trim();
+    String matKhau = new String(txtMatKhau.getPassword());
 
-        // Kiểm tra khách hàng
-        KhachHang khachHang = khDao.selectById(maDangNhap);
-        if (khachHang != null) {
-            if (!matKhau.equals(khachHang.getMatKhau())) {
-                MsgBox.alert(this, "Sai mật khẩu!");
-            } else {
-                Auth.userKhachHang = khachHang;
-                MsgBox.alert(this, "Đăng nhập khách hàng thành công!");
-                this.dispose();
-            }
+    NhanVien nhanVien = nvDao.selectById(maDangNhap);
+    if (nhanVien == null) {
+        nhanVien = nvDao.selectByHoTen(maDangNhap);
+    }
+    if (nhanVien == null) {
+        nhanVien = nvDao.selectBySoDienThoai(maDangNhap);
+    }
+
+    if (nhanVien != null) {
+        if (!matKhau.equals(nhanVien.getMatKhau())) {
+            MsgBox.alert(this, "Sai mật khẩu!");
+        } else {
+            Auth.userNhanVien = nhanVien;
+            MsgBox.alert(this, "Đăng nhập nhân viên thành công!");
+            this.dispose();
             return;
         }
-        
-        // Nếu không tìm thấy tài khoản
-        MsgBox.alert(this, "Sai mã đăng nhập!");
     }
-    
+
+    KhachHang khachHang = khDao.selectById(maDangNhap);
+    if (khachHang == null) {
+        khachHang = khDao.selectByHoTen(maDangNhap);
+    }
+    if (khachHang == null) {
+        khachHang = khDao.selectBySoDienThoai(maDangNhap);
+    }
+
+    if (khachHang != null) {
+        if (!matKhau.equals(khachHang.getMatKhau())) {
+            MsgBox.alert(this, "Sai mật khẩu!");
+        } else {
+            Auth.userKhachHang = khachHang;
+            MsgBox.alert(this, "Đăng nhập khách hàng thành công!");
+            this.dispose();
+            return;
+        }
+    }
+
+    MsgBox.alert(this, "Sai mã đăng nhập hoặc tài khoản không tồn tại!");
+}
+
     void ketThuc(){
         if(MsgBox.confirm(this, "Bạn muốn kết thúc ứng dụng?")){
             System.exit(0);

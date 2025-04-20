@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NhanVienDAO extends EduSysDAO<NhanVien, String>{
-     public void insert(NhanVien model) {
+public class NhanVienDAO extends EduSysDAO<NhanVien, String> {
+    public void insert(NhanVien model) {
         String sql = "INSERT INTO NHAN_VIEN (MaNhanVien, HoTen, NgaySinh, GioiTinh, SoDienThoai, Email, MatKhau) VALUES (?, ?, ?, ?, ?, ?, ?)";
         XJdbc.update(sql, 
                 model.getMaNhanVien(), 
@@ -45,6 +45,20 @@ public class NhanVienDAO extends EduSysDAO<NhanVien, String>{
     public NhanVien selectById(String maNhanVien) {
         String sql = "SELECT * FROM NHAN_VIEN WHERE MaNhanVien=?";
         List<NhanVien> list = this.selectBySql(sql, maNhanVien);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    // Thêm phương thức tìm kiếm theo HoTen
+    public NhanVien selectByHoTen(String hoTen) {
+        String sql = "SELECT * FROM NHAN_VIEN WHERE HoTen=?";
+        List<NhanVien> list = this.selectBySql(sql, hoTen);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    // Thêm phương thức tìm kiếm theo SoDienThoai
+    public NhanVien selectBySoDienThoai(String soDienThoai) {
+        String sql = "SELECT * FROM NHAN_VIEN WHERE SoDienThoai=?";
+        List<NhanVien> list = this.selectBySql(sql, soDienThoai);
         return list.isEmpty() ? null : list.get(0);
     }
 

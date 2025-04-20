@@ -61,6 +61,19 @@ public class KhachHangDAO extends EduSysDAO<KhachHang, String> {
         String sql = "SELECT * FROM KHACH_HANG";
         return this.selectBySql(sql);
     }
+    
+    public KhachHang selectByHoTen(String hoTen) {
+    String sql = "SELECT * FROM KHACH_HANG WHERE HoTen=?";
+    List<KhachHang> list = this.selectBySql(sql, hoTen);
+    return list.isEmpty() ? null : list.get(0);
+}
+
+public KhachHang selectBySoDienThoai(String soDienThoai) {
+    String sql = "SELECT * FROM KHACH_HANG WHERE SoDienThoai=?";
+    List<KhachHang> list = this.selectBySql(sql, soDienThoai);
+    return list.isEmpty() ? null : list.get(0);
+}
+
 
     public KhachHang selectById(String maKhachHang) {
         String sql = "SELECT * FROM KHACH_HANG WHERE MaKhachHang=?";
